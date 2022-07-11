@@ -22,4 +22,21 @@ def genPrimes(quant=_inf):
 			curr_num += 1
 		yield curr_num
 		curr_num += 1
+
+class Factored:
 	
+	def __init__(self, number=1):
+		_factors = {}
+	
+	def __mul__(self, other):
+		if not isisntance(other, factored):
+			other = Factored(other)
+		prod = Factored()
+		for prime in set(self.primes+other.primes):
+			power = 0
+			if prime in self.primes:
+				power += self.primes
+			if prime in other.primes:
+				power += other.primes
+			prod._factors[p] = power
+		return prod
