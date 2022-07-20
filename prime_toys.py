@@ -1,24 +1,17 @@
 
-_inf = float("inf")
+def isPrimeTrivial(number):
+	divisor = 2
+	while divisor*divisor <= number:
+		if number%divisor == 0:
+			return False
+		divisor += 1
+	# else
+	return True
 
-class Checker:
-
-	def __init__(self, main_alg="trivial"):
-		pass
-	
-	def trivial(self, number):
-		divisor = 2
-		while divisor**2 <= number:
-			if number%divisor == 0:
-				return False
-		# else
-		return False
-
-def genPrimes(quant=_inf):
-	isPrime = Checker()
+def genPrimes():
 	curr_num = 2
-	while quant > 0:
-		while not isPrime(curr_num):
+	while True:
+		while not isPrimeTrivial(curr_num):
 			curr_num += 1
 		yield curr_num
 		curr_num += 1
@@ -26,17 +19,42 @@ def genPrimes(quant=_inf):
 class Factored:
 	
 	def __init__(self, number=1):
-		_factors = {}
+		self._factors = {}
+		inf_primes = genPrimes()
+		curr_prime = next(inf_primes)
+		while number>1:
+			if number%curr_prime == 0:
+				if curr_prime in self._factors:
+					self._factors[curr_prime] += 1
+				else:
+					self._factors[curr_prime] = 1
+				number //= curr_prime
+			else:
+				curr_prime = next(inf_primes)
 	
+	@property
+	def primes(self):
+		return list(self._factors.keys())
+	
+	@property
+	def powers(self):
+		return list(self._factors.values())
+
 	def __mul__(self, other):
-		if not isisntance(other, factored):
+		if not isinstance(other, Factored):
 			other = Factored(other)
 		prod = Factored()
 		for prime in set(self.primes+other.primes):
 			power = 0
 			if prime in self.primes:
-				power += self.primes
+				power += self._factors[prime]
 			if prime in other.primes:
-				power += other.primes
-			prod._factors[p] = power
+				power += other._factors[prime]
+			prod._factors[prime] = power
 		return prod
+
+	def __repr__(self):
+		result = ""
+		for prime, power in self._factors.items():
+			result += f"{prime}^{power} * "
+		return result[:-3]
